@@ -1,0 +1,56 @@
+{% extends 'base_template.html' %}
+
+{% block bodyblock %}
+    <div class="container mt-5">
+        <h2 class="mb-4">Face Recognition App</h2>
+        <button id="startCamera" class="btn btn-primary">Start Camera</button>
+        <div id="video-container" style="display: none;">
+            <video id="video" width="640" height="480" autoplay></video>
+            <canvas id="canvas-overlay" width="640" height="480"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Function to initialize the camera
+        function initializeCamera() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas-overlay');
+            const context = canvas.getContext('2d');
+
+            // Access the webcam
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    // Set the video source to the webcam stream
+                    video.srcObject = stream;
+
+                    // Display the video container
+                    document.getElementById('video-container').style.display = 'block';
+
+                    // Load the face recognition script
+                    const script = document.createElement('script');
+                    script.src = '/static/js/face_recognition_script.js';  // Update the path accordingly
+                    document.body.appendChild(script);
+
+                    // Draw video frames on the canvas
+                    video.addEventListener('play', function () {
+                        const width = video.videoWidth;
+                        const height = video.videoHeight;
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        (function drawFrame() {
+                            context.drawImage(video, 0, 0, width, height);
+                            requestAnimationFrame(drawFrame);
+                        })();
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error accessing webcam:', error);
+                });
+        }
+
+        // Attach the event listener to the button
+        document.getElementById('startCamera').addEventListener('click', initializeCamera);
+    </script>
+{% endblock %}

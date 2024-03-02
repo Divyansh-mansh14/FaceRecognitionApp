@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block bodyblock %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <br><br>
+            <!-- form: upload the image -->
+            <h3 class="display-8">Age Recognition</h3>
+            <p>Upload an image (.jpg, .jpeg, .png, .cms, .webp), our model will detect faces and predict the age of the person in each face.</p>
+            <!-- upload image form -->
+            <form action="{{ url_for('upload_and_recognize') }}" method="POST" enctype="multipart/form-data">
+                <div class="input-group">
+                    <input type="file" class="form-control" name="image" required>
+                    <input type="submit" value="Upload & Recognize" class="btn btn-outline-primary">
+                </div>
+            </form>
+        </div>
+        <div class="col-8">
+            <!-- report: detected faces and age prediction -->
+            {% if detected_faces %}
+            <br><br>
+            <!-- detected faces -->
+            <h3 class="display-8">Detected Faces</h3>
+            {% for face_info in detected_faces %}
+                <hr>
+                <div>
+                    <!-- Display the detected face -->
+                    <img src="{{ url_for('static', filename='predict/' + face_info['image']) }}" class="image-fluid" height="100" alt="Detected Face">
+                    <br>
+                    <!-- Display age prediction for the detected face -->
+                    <p>Estimated Age: {{ face_info['estimated_age'] }} years</p>
+                    <!-- Add more information as needed -->
+                </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
